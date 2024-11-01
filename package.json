@@ -1,0 +1,38 @@
+{
+    "name": "piscina-basic",
+    "version": "1.0.0",
+    "description": "piscina basic",
+    "main": "dist/app.js",
+    "scripts": {
+        "test": "jest --no-cache  --detectOpenHandles --runInBand --forceExit",
+        "start:fibonacci": "tsc && node dist/fibonacci/fibonacci.main.js",
+        "start:json2yaml": "tsc && node dist/json2yaml/json2yaml.main.js",
+        "start:debug": "tsc && node --inspect=0.0.0.0 --trace-warnings dist/app.js",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "build": "tsc"
+    },
+    "author": "Alberto Ielpo",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/jest": "~29.5.11",
+        "@types/node": "~22.8.6",
+        "jest": "~29.7.0",
+        "prettier": "~3.2.4",
+        "typescript": "~5.6.3"
+    },
+    "dependencies": {
+        "@nestjs/common": "^10.4.6",
+        "json2yaml": "^1.1.0",
+        "piscina": "~4.7.0"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "src",
+        "testRegex": ".*\\.spec\\.ts$",
+        "testEnvironment": "node"
+    }
+}

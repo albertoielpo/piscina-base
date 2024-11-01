@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch hello world",
+            "skipFiles": ["<node_internals>/**"],
+            "program": "${workspaceFolder}/dist/json2yaml/json2yaml.main.js"
+        }
+    ]
+}

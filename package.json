@@ -1,12 +1,13 @@
 {
     "name": "piscina-basic",
     "version": "1.0.0",
-    "description": "piscina basic",
+    "description": "Example project to play with piscina library",
     "main": "dist/app.js",
     "scripts": {
         "test": "jest --no-cache  --detectOpenHandles --runInBand --forceExit",
         "start:fibonacci": "tsc && node dist/fibonacci/fibonacci.main.js",
         "start:json2yaml": "tsc && node dist/json2yaml/json2yaml.main.js",
+        "start:byte": "tsc && node dist/byte-transfer/byte-transfer.main.js",
         "start:debug": "tsc && node --inspect=0.0.0.0 --trace-warnings dist/app.js",
         "format": "prettier --write \"src/**/*.ts\"",
         "build": "tsc"

@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import * as path from "node:path";
 
 export const filename = path.resolve(__filename);
-export type ByteTransferPayload = ArrayBuffer | SharedArrayBuffer | Uint8Array;
+export type ByteTransferPayload = ArrayBuffer | Uint8Array;
 export type SharedByteTransferPayload = SharedArrayBuffer | Uint8Array;
 
 function doEdit(data: Uint8Array): void {

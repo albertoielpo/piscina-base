@@ -12,6 +12,7 @@ import { ByteTransferPayload } from "./byte-transfer.worker";
     const ALLOCATE_BYTE = 104_857_600; // 100MB
     const PAUSE_GC = 10_000; // ms
     logger.log("application start start");
+    printMemUsage(logger);
 
     const service = new ByteTransferService();
 
@@ -22,10 +23,10 @@ import { ByteTransferPayload } from "./byte-transfer.worker";
         viewData[0] = 1;
         viewData[1] = 2;
 
-        // logger.log(viewData);
         printMemUsage(logger);
         let res: ByteTransferPayload | null = null;
         res = await service.edit(viewData);
+        logger.log("returned from piscina");
         printMemUsage(logger);
         logger.log(viewData[0]);
         if (res && ArrayBuffer.isView(res)) {
@@ -40,6 +41,8 @@ import { ByteTransferPayload } from "./byte-transfer.worker";
 
     logger.log(`waiting for gc.. pause ${PAUSE_GC}ms...`);
     await setTimeout(PAUSE_GC);
+    logger.log("after gc");
+    printMemUsage(logger);
 
     logger.log("shared...");
 
@@ -52,6 +55,7 @@ import { ByteTransferPayload } from "./byte-transfer.worker";
 
         printMemUsage(logger);
         await service.editShared(viewDataShared);
+        logger.log("returned from piscina");
         printMemUsage(logger);
         logger.log(viewDataShared[0]);
     };

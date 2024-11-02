@@ -1,6 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { resolve } from "node:path";
 import { Piscina } from "piscina";
+import { printMemUsage } from "../format.utils";
 import { ByteTransferPayload, filename } from "./byte-transfer.worker";
 
 export default class ByteTransferService {
@@ -16,12 +17,14 @@ export default class ByteTransferService {
     });
 
     public edit(bytes: ByteTransferPayload): Promise<ByteTransferPayload> {
-        // printMemUsage(this.logger);
+        this.logger.log("before calling piscina");
+        printMemUsage(this.logger);
         return this.piscina.run(bytes, { name: "edit" });
     }
 
     public editShared(bytes: ByteTransferPayload): Promise<void> {
-        // printMemUsage(this.logger);
+        this.logger.log("before calling piscina");
+        printMemUsage(this.logger);
         return this.piscina.run(bytes, { name: "editShared" });
     }
 }

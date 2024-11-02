@@ -1,10 +1,10 @@
 import { Logger } from "@nestjs/common";
 import { setTimeout } from "node:timers/promises";
+import { isUint8Array } from "node:util/types";
 import { setFlagsFromString } from "v8";
 import { runInNewContext } from "vm";
 import { printMemUsage } from "../format.utils";
 import ByteTransferService from "./byte-transfer.service";
-import { ByteTransferPayload } from "./byte-transfer.worker";
 
 // test array transfer between main and worker
 (async () => {
@@ -24,12 +24,12 @@ import { ByteTransferPayload } from "./byte-transfer.worker";
         viewData[1] = 2;
 
         printMemUsage(logger);
-        let res: ByteTransferPayload = await service.edit(viewData);
+        let res = await service.edit(viewData);
         logger.log("returned from piscina");
         printMemUsage(logger);
-        logger.log(viewData[0]);
-        if (res && ArrayBuffer.isView(res)) {
-            logger.log(res[0]);
+        logger.log(viewData[0]); // this should be undefined because data are deallocated with the move to piscina
+        if (isUint8Array(res)) {
+            logger.log(res[0]); // this should be the value edited inside the worker
         }
     };
     await notShared();

@@ -15,7 +15,7 @@ export default class ByteTransferDto {
         if (isUint8Array(this.byteArray)) {
             return [this.byteArray.buffer];
         }
-        return [this.metadata, this.byteArray];
+        return [this.byteArray];
     }
 
     get [valueSymbol]() {

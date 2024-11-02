@@ -24,8 +24,7 @@ import { ByteTransferPayload } from "./byte-transfer.worker";
         viewData[1] = 2;
 
         printMemUsage(logger);
-        let res: ByteTransferPayload | null = null;
-        res = await service.edit(viewData);
+        let res: ByteTransferPayload = await service.edit(viewData);
         logger.log("returned from piscina");
         printMemUsage(logger);
         logger.log(viewData[0]);

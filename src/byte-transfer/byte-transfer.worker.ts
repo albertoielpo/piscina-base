@@ -4,6 +4,7 @@ import * as path from "node:path";
 import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { move } from "piscina";
 import { printMemUsage } from "../format.utils";
+import ByteTransferDto from "./byte.transfer.dto";
 
 export const filename = path.resolve(__filename);
 
@@ -46,4 +47,22 @@ export function editShared(data: SharedByteTransferPayload): void {
     } else {
         throw new Error("Not supported type");
     }
+}
+
+export function editWithPayload(data: ByteTransferDto): PiscinaTransferable {
+    const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
+    logger.log(`executing...`);
+    logger.log(
+        `payload: metadata: ${data.metadata}, byteArray length: ${data.byteArray.byteLength}`
+    );
+
+    if (isUint8Array(data.byteArray)) {
+        doEdit(data.byteArray);
+    } else if (isAnyArrayBuffer(data.byteArray)) {
+        doEdit(new Uint8Array(data.byteArray));
+    } else {
+        throw new Error("Not supported type");
+    }
+    printMemUsage(logger);
+    return move(data.byteArray);
 }

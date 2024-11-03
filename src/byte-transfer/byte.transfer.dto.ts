@@ -11,7 +11,7 @@ export default class ByteTransferDto {
     }
 
     get [transferableSymbol]() {
-        // Transfer the two underlying ArrayBuffers
+        // Transfer the underlying ArrayBuffer
         if (isUint8Array(this.byteArray)) {
             return [this.byteArray.buffer];
         }

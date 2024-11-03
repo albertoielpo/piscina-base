@@ -19,7 +19,13 @@ function doEdit(data: Uint8Array): void {
     data[0] = 10;
 }
 
-// this could also not be async but must be awaited in app.ts
+// IMPORTANT: The caller must await all this calls because Piscina always return a Promise
+
+/**
+ * in this case the move must be done with the underlying ArrayBuffer because ArrayBuffer is transferable
+ * @param data
+ * @returns
+ */
 export function edit(data: PiscinaTransferable): PiscinaTransferable {
     const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
     logger.log("executing...");
@@ -32,11 +38,16 @@ export function edit(data: PiscinaTransferable): PiscinaTransferable {
         throw new Error("Not supported type");
     }
     printMemUsage(logger);
-    return move(data);
+    return move(isUint8Array(data) ? data.buffer : data); // ensure to transfer the underlying buffer
 }
 
-// here no data are trasfer or returned
+/**
+ * here no data are trasfer or returned
+ * Pay attention because SharedArrayBuffer could soffer race conditions
+ * @param data
+ */
 export function editShared(data: SharedByteTransferPayload): void {
+    // TODO: use mutex to avoid race conditions
     const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
     logger.log("executing...");
     // printMemUsage(logger);
@@ -49,6 +60,11 @@ export function editShared(data: SharedByteTransferPayload): void {
     }
 }
 
+/**
+ * in this case ByteTransferDto transfer the underlying ArrayBuffer in both directions
+ * @param data
+ * @returns
+ */
 export function editWithPayload(data: ByteTransferDto): PiscinaTransferable {
     const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
     logger.log(`executing...`);
@@ -64,5 +80,29 @@ export function editWithPayload(data: ByteTransferDto): PiscinaTransferable {
         throw new Error("Not supported type");
     }
     printMemUsage(logger);
-    return move(data.byteArray);
+    // move back only the byteArray
+    return move(
+        isUint8Array(data.byteArray) ? data.byteArray.buffer : data.byteArray
+    );
+}
+
+export function editWithPayloadBoth(
+    data: ByteTransferDto
+): PiscinaTransferable {
+    const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
+    logger.log(`executing...`);
+    logger.log(
+        `payload: metadata: ${data.metadata}, byteArray length: ${data.byteArray.byteLength}`
+    );
+
+    if (isUint8Array(data.byteArray)) {
+        doEdit(data.byteArray);
+    } else if (isAnyArrayBuffer(data.byteArray)) {
+        doEdit(new Uint8Array(data.byteArray));
+    } else {
+        throw new Error("Not supported type");
+    }
+    printMemUsage(logger);
+    // the ByteTransferDto has transferable symbol
+    return move(new ByteTransferDto(data.metadata, data.byteArray));
 }

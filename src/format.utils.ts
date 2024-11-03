@@ -1,3 +1,5 @@
+const memUsageArray: any = [];
+
 export function humanFileSize(size: number): string {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
     return (
@@ -9,6 +11,7 @@ export function humanFileSize(size: number): string {
 
 export function printMemUsage(logger: { log: Function }): void {
     const memUsage = process.memoryUsage();
+    memUsageArray.push(memUsage);
     logger.log("---");
     logger.log(`rss: ${humanFileSize(memUsage.rss)}`);
     logger.log(`heapTotal: ${humanFileSize(memUsage.heapTotal)}`);

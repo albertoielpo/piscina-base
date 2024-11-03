@@ -34,6 +34,17 @@ export default class ByteTransferService {
         return this.piscina.run(move(payload), { name: "editWithPayload" });
     }
 
+    public async editWithPayloadBoth(
+        payload: ByteTransferDto
+    ): Promise<ByteTransferDto> {
+        this.logger.log("before calling piscina");
+        printMemUsage(this.logger);
+        const res = await this.piscina.run(move(payload), {
+            name: "editWithPayloadBoth"
+        });
+        return res as ByteTransferDto;
+    }
+
     public async editShared(
         bytes: Uint8Array | SharedArrayBuffer
     ): Promise<void> {

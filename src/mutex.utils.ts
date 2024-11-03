@@ -7,10 +7,11 @@ const unlocked = 0;
 export class Mutex {
     private _sab: SharedArrayBuffer;
     private _mu: Int32Array;
+
     /**
      * Instantiate Mutex.
-     * If opt_sab is provided, the mutex will use it as a backing array.
-     * @param {SharedArrayBuffer} mutexSab Optional SharedArrayBuffer.
+     * The mutex will use mutexSab as a backing array.
+     * @param {SharedArrayBuffer} mutexSab
      */
     constructor(mutexSab: SharedArrayBuffer) {
         if (!mutexSab) {

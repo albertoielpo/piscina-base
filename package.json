@@ -2,7 +2,7 @@
     "name": "piscina-basic",
     "version": "1.0.0",
     "description": "Example project to play with piscina library",
-    "main": "dist/app.js",
+    "main": "dist/main.js",
     "scripts": {
         "test": "jest --no-cache  --detectOpenHandles --runInBand --forceExit",
         "start:fibonacci": "tsc && node dist/fibonacci/fibonacci.main.js",
@@ -10,8 +10,11 @@
         "format": "prettier --write \"src/**/*.ts\"",
         "build": "tsc"
     },
-    "author": "Alberto Ielpo",
-    "license": "ISC",
+    "author": "Alberto Ielpo <alberto.ielpo@gmail.com>",
+    "repository": {
+        "url": "https://github.com/albertoielpo/piscina-base.git"
+    },
+    "license": "MIT",
     "devDependencies": {
         "@types/node": "~22.8.6",
         "prettier": "~3.2.4",

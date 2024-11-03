@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 import * as path from "node:path";
 import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { move } from "piscina";
-import { printMemUsage } from "../format.utils";
+import FormatUtils from "../format.utils";
 import ByteTransferDto from "./byte.transfer.dto";
 
 export const filename = path.resolve(__filename);
@@ -37,7 +37,7 @@ export function edit(data: PiscinaTransferable): PiscinaTransferable {
     } else {
         throw new Error("Not supported type");
     }
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     return move(isUint8Array(data) ? data.buffer : data); // ensure to transfer the underlying buffer
 }
 
@@ -53,7 +53,7 @@ export function edit(data: PiscinaTransferable): PiscinaTransferable {
 export function editShared(data: SharedByteTransferPayload): void {
     const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
     logger.log("executing...");
-    // printMemUsage(logger);
+    // FormatUtils.printMemUsage(logger);
     if (isUint8Array(data)) {
         doEdit(data);
     } else if (isAnyArrayBuffer(data)) {
@@ -82,7 +82,7 @@ export function editWithPayload(data: ByteTransferDto): PiscinaTransferable {
     } else {
         throw new Error("Not supported type");
     }
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     // move back only the byteArray
     return move(
         isUint8Array(data.byteArray) ? data.byteArray.buffer : data.byteArray
@@ -105,7 +105,7 @@ export function editWithPayloadBoth(
     } else {
         throw new Error("Not supported type");
     }
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     // the ByteTransferDto has transferable symbol
     return move(new ByteTransferDto(data.metadata, data.byteArray));
 }

@@ -1,7 +1,7 @@
 import { Logger } from "@nestjs/common";
 import { resolve } from "node:path";
 import { move, Piscina } from "piscina";
-import { printMemUsage } from "../format.utils";
+import FormatUtils from "../format.utils";
 import { filename, PiscinaTransferable } from "./byte-transfer.worker";
 import ByteTransferDto from "./byte.transfer.dto";
 
@@ -22,7 +22,7 @@ export default class ByteTransferService {
 
     public edit(bytes: Uint8Array | ArrayBuffer): Promise<PiscinaTransferable> {
         this.logger.log("before calling piscina");
-        printMemUsage(this.logger);
+        FormatUtils.printMemUsage(this.logger);
         return this.piscina.run(move(bytes), { name: "edit" });
     }
 
@@ -30,7 +30,7 @@ export default class ByteTransferService {
         payload: ByteTransferDto
     ): Promise<PiscinaTransferable> {
         this.logger.log("before calling piscina");
-        printMemUsage(this.logger);
+        FormatUtils.printMemUsage(this.logger);
         return this.piscina.run(move(payload), { name: "editWithPayload" });
     }
 
@@ -38,7 +38,7 @@ export default class ByteTransferService {
         payload: ByteTransferDto
     ): Promise<ByteTransferDto> {
         this.logger.log("before calling piscina");
-        printMemUsage(this.logger);
+        FormatUtils.printMemUsage(this.logger);
         const res = await this.piscina.run(move(payload), {
             name: "editWithPayloadBoth"
         });
@@ -49,7 +49,7 @@ export default class ByteTransferService {
         bytes: Uint8Array | SharedArrayBuffer
     ): Promise<void> {
         this.logger.log("before calling piscina");
-        printMemUsage(this.logger);
+        FormatUtils.printMemUsage(this.logger);
         await this.piscina.run(bytes, { name: "editShared" });
     }
 }

@@ -3,7 +3,7 @@ import { setTimeout } from "node:timers/promises";
 import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { setFlagsFromString } from "v8";
 import { runInNewContext } from "vm";
-import { printMemUsage } from "../format.utils";
+import FormatUtils from "../format.utils";
 import ByteTransferService from "./byte-transfer.service";
 import ByteTransferDto from "./byte.transfer.dto";
 
@@ -23,10 +23,10 @@ async function sendRaw(service: ByteTransferService) {
     viewData[0] = 1;
     viewData[1] = 2;
 
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     let res = await service.edit(viewData);
     logger.log("returned from piscina");
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     logger.log(
         `this should be undefined because data are deallocated with the move to piscina : ${viewData[0]}`
     );
@@ -56,12 +56,12 @@ async function sendWithPayload(service: ByteTransferService) {
     viewData[0] = 1;
     viewData[1] = 2;
 
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     const dto = new ByteTransferDto("somemetadata", viewData);
 
     let res = await service.editWithPayload(dto);
     logger.log("returned from piscina");
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     logger.log(
         `this should be undefined because data are deallocated with the move to piscina : ${viewData[0]}`
     );
@@ -91,12 +91,12 @@ async function sendWithPayloadBoth(service: ByteTransferService) {
     viewData[0] = 1;
     viewData[1] = 2;
 
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     const dto = new ByteTransferDto("somemetadata", viewData);
 
     let res = await service.editWithPayloadBoth(dto);
     logger.log("returned from piscina");
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     logger.log(`print metadata: ${res.metadata}`);
     logger.log(
         `this should be undefined because data are deallocated with the move to piscina : ${viewData[0]}`
@@ -123,10 +123,10 @@ async function sharedBuffer(service: ByteTransferService) {
     viewDataShared[0] = 1;
     viewDataShared[1] = 2;
 
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     await service.editShared(viewDataShared);
     logger.log("returned from piscina");
-    printMemUsage(logger);
+    FormatUtils.printMemUsage(logger);
     logger.log(`Data must have changed: ${viewDataShared[0]}`);
 }
 
@@ -142,7 +142,8 @@ async function callGc() {
 // test array transfer between main and worker
 (async () => {
     logger.log("application start start");
-    printMemUsage(logger);
+    await setTimeout(5000);
+    FormatUtils.printMemUsage(logger);
 
     const service = new ByteTransferService();
 
@@ -150,28 +151,28 @@ async function callGc() {
         // sending raw data to the worker with data move
         await sendRaw(service);
         await callGc();
-        printMemUsage(logger);
+        FormatUtils.printMemUsage(logger);
     }
 
     if (true) {
         // sending payload including a raw data to the worker with data move
         await sendWithPayload(service);
         await callGc();
-        printMemUsage(logger);
+        FormatUtils.printMemUsage(logger);
     }
 
     if (true) {
         // sending payload including a raw data to the worker with data move
         await sendWithPayloadBoth(service);
         await callGc();
-        printMemUsage(logger);
+        FormatUtils.printMemUsage(logger);
     }
 
     if (true) {
         // sending a shared buffer to the worker
         logger.log("shared...");
         await sharedBuffer(service);
-        printMemUsage(logger);
+        FormatUtils.printMemUsage(logger);
     }
 
     logger.log("end");

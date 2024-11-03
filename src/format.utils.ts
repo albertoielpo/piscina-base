@@ -1,22 +1,31 @@
-const memUsageArray: any = [];
+export default class FormatUtils {
+    /**
+     * Format human readable byte
+     * 1024b = 1kB
+     * @param size
+     * @returns
+     */
+    public static byte(size: number): string {
+        const ii = size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+        return (
+            +(size / Math.pow(1024, ii)).toFixed(2) * 1 +
+            " " +
+            ["B", "kB", "MB", "GB", "TB"][ii]
+        );
+    }
 
-export function humanFileSize(size: number): string {
-    var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-    return (
-        +(size / Math.pow(1024, i)).toFixed(2) * 1 +
-        " " +
-        ["B", "kB", "MB", "GB", "TB"][i]
-    );
-}
-
-export function printMemUsage(logger: { log: Function }): void {
-    const memUsage = process.memoryUsage();
-    memUsageArray.push(memUsage);
-    logger.log("---");
-    logger.log(`rss: ${humanFileSize(memUsage.rss)}`);
-    logger.log(`heapTotal: ${humanFileSize(memUsage.heapTotal)}`);
-    logger.log(`heapUsed: ${humanFileSize(memUsage.heapUsed)}`);
-    logger.log(`external: ${humanFileSize(memUsage.external)}`);
-    logger.log(`arrayBuffers: ${humanFileSize(memUsage.arrayBuffers)}`);
-    logger.log("---");
+    /**
+     * Print to the logger process.memoryUsage
+     * @param logger
+     */
+    public static printMemUsage(logger: { log: Function }): void {
+        const memUsage = process.memoryUsage();
+        logger.log("---");
+        logger.log(`rss: ${FormatUtils.byte(memUsage.rss)}`);
+        logger.log(`heapTotal: ${FormatUtils.byte(memUsage.heapTotal)}`);
+        logger.log(`heapUsed: ${FormatUtils.byte(memUsage.heapUsed)}`);
+        logger.log(`external: ${FormatUtils.byte(memUsage.external)}`);
+        logger.log(`arrayBuffers: ${FormatUtils.byte(memUsage.arrayBuffers)}`);
+        logger.log("---");
+    }
 }

@@ -7,6 +7,7 @@
         "test": "jest --no-cache  --detectOpenHandles --runInBand --forceExit",
         "start:fibonacci": "tsc && node dist/fibonacci/fibonacci.main.js",
         "start:byte": "tsc && node --inspect=0.0.0.0 dist/byte-transfer/byte-transfer.main.js",
+        "start": "tsc && node dist/main.js",
         "format": "prettier --write \"src/**/*.ts\"",
         "build": "tsc"
     },

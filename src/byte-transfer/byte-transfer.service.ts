@@ -46,10 +46,14 @@ export default class ByteTransferService {
     }
 
     public async editShared(
-        bytes: Uint8Array | SharedArrayBuffer
+        bytes: Uint8Array,
+        mutexSab: SharedArrayBuffer
     ): Promise<void> {
         this.logger.log("before calling piscina");
         FormatUtils.printMemUsage(this.logger);
-        await this.piscina.run(bytes, { name: "editShared" });
+        await this.piscina.run(
+            { data: bytes.buffer, mutexSab },
+            { name: "editShared" }
+        );
     }
 }

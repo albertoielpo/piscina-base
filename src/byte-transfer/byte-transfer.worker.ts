@@ -4,6 +4,7 @@ import * as path from "node:path";
 import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { move } from "piscina";
 import FormatUtils from "../format.utils";
+import { Mutex } from "../mutex.utils";
 import ByteTransferDto from "./byte.transfer.dto";
 
 export const filename = path.resolve(__filename);
@@ -46,20 +47,29 @@ export function edit(data: PiscinaTransferable): PiscinaTransferable {
  * This implementation is just an example
  * do not use it in a real scenario unless is proper sync with mutex
  *
- * TODO: use mutex to avoid race conditions
- * @see https://blogtitle.github.io/using-javascript-sharedarraybuffers-and-atomics/
- * @param data
+ * @see
+ * @param payload
  */
-export function editShared(data: SharedByteTransferPayload): void {
+export async function editShared(payload: {
+    data: SharedArrayBuffer;
+    mutexSab: SharedArrayBuffer;
+}): Promise<void> {
     const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
     logger.log("executing...");
     // FormatUtils.printMemUsage(logger);
-    if (isUint8Array(data)) {
-        doEdit(data);
-    } else if (isAnyArrayBuffer(data)) {
-        doEdit(new Uint8Array(data));
-    } else {
-        throw new Error("Not supported type");
+
+    const mutex = new Mutex(payload.mutexSab);
+    try {
+        mutex.lock();
+        if (isUint8Array(payload.data)) {
+            doEdit(payload.data);
+        } else if (isAnyArrayBuffer(payload.data)) {
+            doEdit(new Uint8Array(payload.data));
+        } else {
+            throw new Error("Not supported type");
+        }
+    } finally {
+        mutex.unlock();
     }
 }
 

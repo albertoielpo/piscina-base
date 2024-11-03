@@ -4,6 +4,7 @@ import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { setFlagsFromString } from "v8";
 import { runInNewContext } from "vm";
 import FormatUtils from "../format.utils";
+import { Mutex } from "../mutex.utils";
 import ByteTransferService from "./byte-transfer.service";
 import ByteTransferDto from "./byte.transfer.dto";
 
@@ -117,14 +118,30 @@ async function sendWithPayloadBoth(service: ByteTransferService) {
 }
 
 async function sharedBuffer(service: ByteTransferService) {
-    //// shared example
+    // shared example
     const originalDataShared = new SharedArrayBuffer(ALLOCATE_BYTE);
     const viewDataShared = new Uint8Array(originalDataShared);
-    viewDataShared[0] = 1;
-    viewDataShared[1] = 2;
+
+    // this array should follow originalDataShared
+    const mutexSab = new SharedArrayBuffer(4);
+    const mutex = new Mutex(mutexSab);
+
+    /**
+     * Every time that there is a data manipulation on a shared array buffer a lock needs to be applied
+     * between lock() and unlock() the other threads that trying to access are paused
+     * Important: if a double lock is applied in the same thread, that is paused forever
+     * Always try finally a mutex block
+     */
+    try {
+        mutex.lock();
+        viewDataShared[0] = 1;
+        viewDataShared[1] = 2;
+    } finally {
+        mutex.unlock();
+    }
 
     FormatUtils.printMemUsage(logger);
-    await service.editShared(viewDataShared);
+    await service.editShared(viewDataShared, mutexSab);
     logger.log("returned from piscina");
     FormatUtils.printMemUsage(logger);
     logger.log(`Data must have changed: ${viewDataShared[0]}`);
@@ -142,7 +159,6 @@ async function callGc() {
 // test array transfer between main and worker
 (async () => {
     logger.log("application start start");
-    await setTimeout(5000);
     FormatUtils.printMemUsage(logger);
 
     const service = new ByteTransferService();

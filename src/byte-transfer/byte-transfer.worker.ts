@@ -42,12 +42,15 @@ export function edit(data: PiscinaTransferable): PiscinaTransferable {
 }
 
 /**
- * here no data are trasfer or returned
- * Pay attention because SharedArrayBuffer could soffer race conditions
+ * Here no data are trasfer or returned
+ * This implementation is just an example
+ * do not use it in a real scenario unless is proper sync with mutex
+ *
+ * TODO: use mutex to avoid race conditions
+ * @see https://blogtitle.github.io/using-javascript-sharedarraybuffers-and-atomics/
  * @param data
  */
 export function editShared(data: SharedByteTransferPayload): void {
-    // TODO: use mutex to avoid race conditions
     const logger = new Logger(`byte-transfer-worker ${randomUUID()}`);
     logger.log("executing...");
     // printMemUsage(logger);

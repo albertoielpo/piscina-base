@@ -4,7 +4,7 @@ import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { setFlagsFromString } from "v8";
 import { runInNewContext } from "vm";
 import FormatUtils from "../format.utils";
-import { Mutex } from "../mutex.utils";
+import { Mutex } from "../mutex";
 import ByteTransferDto from "./byte-transfer.dto";
 import ByteTransferService from "./byte-transfer.service";
 

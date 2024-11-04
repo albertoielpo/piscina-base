@@ -24,6 +24,7 @@ export default class ByteTransferService {
     public edit(bytes: Uint8Array | ArrayBuffer): Promise<PiscinaTransferable> {
         this.logger.log("before calling piscina");
         FormatUtils.printMemUsage(this.logger);
+        // here data are moved because ArrayBuffer is transferable
         return this.piscina.run(
             move(isUint8Array(bytes) ? bytes.buffer : bytes),
             { name: "edit" }
@@ -35,6 +36,7 @@ export default class ByteTransferService {
     ): Promise<PiscinaTransferable> {
         this.logger.log("before calling piscina");
         FormatUtils.printMemUsage(this.logger);
+        // here data are moved using ByteTransferDto (transferableSymbol)
         return this.piscina.run(move(payload), { name: "editWithPayload" });
     }
 
@@ -43,6 +45,7 @@ export default class ByteTransferService {
     ): Promise<ByteTransferDto> {
         this.logger.log("before calling piscina");
         FormatUtils.printMemUsage(this.logger);
+        // here data are moved using ByteTransferDto (transferableSymbol)
         const res = await this.piscina.run(move(payload), {
             name: "editWithPayloadBoth"
         });
@@ -55,6 +58,11 @@ export default class ByteTransferService {
     ): Promise<void> {
         this.logger.log("before calling piscina");
         FormatUtils.printMemUsage(this.logger);
+        /**
+         * Here there is no need to move because bytes contains a SharedArrayBuffer reference
+         * and by default is copied the pointer and not the data
+         * It's important to transfer also mutexSab in order to sync access
+         */
         await this.piscina.run(
             { data: bytes.buffer, mutexSab },
             { name: "editShared" }

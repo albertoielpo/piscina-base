@@ -1,12 +1,12 @@
-const locked = 1;
-const unlocked = 0;
+const LOCKED = 1;
+const UNLOCKED = 0;
 
 /**
  * @see https://blogtitle.github.io/using-javascript-sharedarraybuffers-and-atomics/
  */
 export class Mutex {
-    private _sab: SharedArrayBuffer;
-    private _mu: Int32Array;
+    private sab: SharedArrayBuffer;
+    private mu: Int32Array;
 
     /**
      * Instantiate Mutex.
@@ -17,8 +17,8 @@ export class Mutex {
         if (!mutexSab) {
             throw new Error("A Mutex SharedArrayBuffer is required");
         }
-        this._sab = mutexSab;
-        this._mu = new Int32Array(this._sab); // Int32 used for compatibility
+        this.sab = mutexSab;
+        this.mu = new Int32Array(this.sab); // Int32 used for compatibility
     }
 
     /**
@@ -26,27 +26,27 @@ export class Mutex {
      * @param {Mutex} mu the other Mutex.
      */
     static connect(mu: Mutex) {
-        return new Mutex(mu._sab);
+        return new Mutex(mu.sab);
     }
 
     lock() {
         for (;;) {
             if (
-                Atomics.compareExchange(this._mu, 0, unlocked, locked) ==
-                unlocked
+                Atomics.compareExchange(this.mu, 0, UNLOCKED, LOCKED) ==
+                UNLOCKED
             ) {
                 return;
             }
-            Atomics.wait(this._mu, 0, locked);
+            Atomics.wait(this.mu, 0, LOCKED);
         }
     }
 
     unlock() {
-        if (Atomics.compareExchange(this._mu, 0, locked, unlocked) != locked) {
+        if (Atomics.compareExchange(this.mu, 0, LOCKED, UNLOCKED) != LOCKED) {
             throw new Error(
                 "Mutex is in inconsistent state: unlock on unlocked Mutex."
             );
         }
-        Atomics.notify(this._mu, 0, 1);
+        Atomics.notify(this.mu, 0, 1);
     }
 }

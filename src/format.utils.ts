@@ -1,6 +1,6 @@
 export default class FormatUtils {
     /**
-     * Format human readable byte
+     * Format as human readable byte
      * 1024b = 1kB
      * @param size
      * @returns
@@ -15,7 +15,7 @@ export default class FormatUtils {
     }
 
     /**
-     * Print to the logger process.memoryUsage
+     * Print memory usage using application logger
      * @param logger
      */
     public static printMemUsage(logger: { log: Function }): void {

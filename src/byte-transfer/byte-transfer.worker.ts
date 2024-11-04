@@ -4,7 +4,7 @@ import * as path from "node:path";
 import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { move } from "piscina";
 import FormatUtils from "../format.utils";
-import { Mutex } from "../mutex.utils";
+import { Mutex } from "../mutex";
 import ByteTransferDto from "./byte-transfer.dto";
 
 export const filename = path.resolve(__filename);

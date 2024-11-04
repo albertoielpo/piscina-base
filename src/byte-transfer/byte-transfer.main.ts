@@ -5,8 +5,8 @@ import { setFlagsFromString } from "v8";
 import { runInNewContext } from "vm";
 import FormatUtils from "../format.utils";
 import { Mutex } from "../mutex.utils";
+import ByteTransferDto from "./byte-transfer.dto";
 import ByteTransferService from "./byte-transfer.service";
-import ByteTransferDto from "./byte.transfer.dto";
 
 const logger = new Logger(`Main`);
 const ALLOCATE_BYTE = 10_485_760; // 10MB

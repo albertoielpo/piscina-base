@@ -5,7 +5,7 @@ import { isAnyArrayBuffer, isUint8Array } from "node:util/types";
 import { move } from "piscina";
 import FormatUtils from "../format.utils";
 import { Mutex } from "../mutex.utils";
-import ByteTransferDto from "./byte.transfer.dto";
+import ByteTransferDto from "./byte-transfer.dto";
 
 export const filename = path.resolve(__filename);
 

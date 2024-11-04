@@ -3,8 +3,8 @@ import { resolve } from "node:path";
 import { isUint8Array } from "node:util/types";
 import { move, Piscina } from "piscina";
 import FormatUtils from "../format.utils";
+import ByteTransferDto from "./byte-transfer.dto";
 import { filename, PiscinaTransferable } from "./byte-transfer.worker";
-import ByteTransferDto from "./byte.transfer.dto";
 
 export default class ByteTransferService {
     private readonly logger = new Logger(ByteTransferService.name);

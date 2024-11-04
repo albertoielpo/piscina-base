@@ -1,5 +1,6 @@
 import { Logger } from "@nestjs/common";
 import { resolve } from "node:path";
+import { isUint8Array } from "node:util/types";
 import { move, Piscina } from "piscina";
 import FormatUtils from "../format.utils";
 import { filename, PiscinaTransferable } from "./byte-transfer.worker";
@@ -23,7 +24,10 @@ export default class ByteTransferService {
     public edit(bytes: Uint8Array | ArrayBuffer): Promise<PiscinaTransferable> {
         this.logger.log("before calling piscina");
         FormatUtils.printMemUsage(this.logger);
-        return this.piscina.run(move(bytes), { name: "edit" });
+        return this.piscina.run(
+            move(isUint8Array(bytes) ? bytes.buffer : bytes),
+            { name: "edit" }
+        );
     }
 
     public editWithPayload(

@@ -32,6 +32,7 @@ export function edit(data: PiscinaTransferable): PiscinaTransferable {
     logger.log("executing...");
 
     if (isUint8Array(data)) {
+        logger.warn("received not transferable data. Check your service");
         doEdit(data);
     } else if (isAnyArrayBuffer(data)) {
         doEdit(new Uint8Array(data));
@@ -62,6 +63,8 @@ export async function editShared(payload: {
     try {
         mutex.lock();
         if (isUint8Array(payload.data)) {
+            // should never here
+            logger.warn("received not transferable data. Check your service");
             doEdit(payload.data);
         } else if (isAnyArrayBuffer(payload.data)) {
             doEdit(new Uint8Array(payload.data));
@@ -74,7 +77,8 @@ export async function editShared(payload: {
 }
 
 /**
- * in this case ByteTransferDto transfer the underlying ArrayBuffer in both directions
+ * Inbound data are transfer using ByteTransferDto and transfering the underlying ArrayBuffer
+ * Data are returning in ArrayBuffer transferable format
  * @param data
  * @returns
  */
@@ -86,6 +90,8 @@ export function editWithPayload(data: ByteTransferDto): PiscinaTransferable {
     );
 
     if (isUint8Array(data.byteArray)) {
+        // should never here
+        logger.warn("received not transferable data. Check your service");
         doEdit(data.byteArray);
     } else if (isAnyArrayBuffer(data.byteArray)) {
         doEdit(new Uint8Array(data.byteArray));
@@ -98,7 +104,11 @@ export function editWithPayload(data: ByteTransferDto): PiscinaTransferable {
         isUint8Array(data.byteArray) ? data.byteArray.buffer : data.byteArray
     );
 }
-
+/**
+ * Inbound and outbound data are transfer using ByteTransferDto and transfering the underlying ArrayBuffer
+ * @param data
+ * @returns
+ */
 export function editWithPayloadBoth(
     data: ByteTransferDto
 ): PiscinaTransferable {
@@ -109,6 +119,8 @@ export function editWithPayloadBoth(
     );
 
     if (isUint8Array(data.byteArray)) {
+        // should never here
+        logger.warn("received not transferable data. Check your service");
         doEdit(data.byteArray);
     } else if (isAnyArrayBuffer(data.byteArray)) {
         doEdit(new Uint8Array(data.byteArray));

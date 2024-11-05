@@ -1,5 +1,7 @@
 const LOCKED = 1;
 const UNLOCKED = 0;
+const INDEX = 0;
+const NOTIFY_COUNT = 1;
 
 /**
  * @see https://blogtitle.github.io/using-javascript-sharedarraybuffers-and-atomics/
@@ -29,24 +31,40 @@ export class Mutex {
         return new Mutex(mu.sab);
     }
 
+    /**
+     * Lock an unlock resource
+     * Compare Exchange atomically change the status from UNLOCKED to LOCKED
+     * If the resouce is already locked then wait
+     * @returns
+     */
     lock() {
         for (;;) {
             if (
-                Atomics.compareExchange(this.mu, 0, UNLOCKED, LOCKED) ==
+                Atomics.compareExchange(this.mu, INDEX, UNLOCKED, LOCKED) ==
                 UNLOCKED
             ) {
+                // compare atomically and it's free then set to locked and return
                 return;
             }
-            Atomics.wait(this.mu, 0, LOCKED);
+            // else wait
+            Atomics.wait(this.mu, INDEX, LOCKED);
         }
     }
 
+    /**
+     * Unlock a lock resource
+     * Compare Exchange atomically change the status from LOCKED to UNLOCKED
+     * If the resource is already unlocked then raise an error
+     */
     unlock() {
-        if (Atomics.compareExchange(this.mu, 0, LOCKED, UNLOCKED) != LOCKED) {
+        if (
+            Atomics.compareExchange(this.mu, INDEX, LOCKED, UNLOCKED) != LOCKED
+        ) {
             throw new Error(
                 "Mutex is in inconsistent state: unlock on unlocked Mutex."
             );
         }
-        Atomics.notify(this.mu, 0, 1);
+        // if the resource can be unlocked then notify
+        Atomics.notify(this.mu, INDEX, NOTIFY_COUNT);
     }
 }

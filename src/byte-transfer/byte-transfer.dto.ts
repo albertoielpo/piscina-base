@@ -1,18 +1,18 @@
-import { isUint8Array } from "node:util/types";
 import { transferableSymbol, valueSymbol } from "piscina";
 
 export default class ByteTransferDto {
     public metadata: string;
-    public byteArray: ArrayBuffer | Uint8Array;
+    public byteArray: ArrayBuffer; // better to be strict to a transferable
 
-    constructor(metadata: string, byteArray: ArrayBuffer | Uint8Array) {
+    constructor(metadata: string, byteArray: ArrayBuffer) {
         this.metadata = metadata;
         this.byteArray = byteArray;
     }
 
     get [transferableSymbol]() {
         // Transfer the underlying ArrayBuffer
-        if (isUint8Array(this.byteArray)) {
+        if (ArrayBuffer.isView(this.byteArray)) {
+            // safety check.. if arrives a view then use the ArrayBuffer
             return [this.byteArray.buffer];
         }
         return [this.byteArray];

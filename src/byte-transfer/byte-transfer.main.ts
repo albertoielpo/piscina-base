@@ -58,7 +58,7 @@ async function sendWithPayload(service: ByteTransferService) {
     viewData[1] = 2;
 
     FormatUtils.printMemUsage(logger);
-    const dto = new ByteTransferDto("somemetadata", viewData);
+    const dto = new ByteTransferDto("somemetadata", viewData.buffer);
 
     let res = await service.editWithPayload(dto);
     logger.log("returned from piscina");
@@ -93,7 +93,7 @@ async function sendWithPayloadBoth(service: ByteTransferService) {
     viewData[1] = 2;
 
     FormatUtils.printMemUsage(logger);
-    const dto = new ByteTransferDto("somemetadata", viewData);
+    const dto = new ByteTransferDto("somemetadata", viewData.buffer);
 
     let res = await service.editWithPayloadBoth(dto);
     logger.log("returned from piscina");
@@ -147,6 +147,9 @@ async function sharedBuffer(service: ByteTransferService) {
     logger.log(`Data must have changed: ${viewDataShared[0]}`);
 }
 
+/**
+ * Force memory clean
+ */
 async function callGc() {
     setFlagsFromString("--expose_gc");
     const gc = runInNewContext("gc"); // nocommit
